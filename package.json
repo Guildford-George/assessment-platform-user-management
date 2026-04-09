@@ -20,7 +20,8 @@
     "prisma-update": "npx prisma db push",
     "prisma-generate": "npx prisma generate",
     "prisma-migrate": "npx prisma migrate dev",
-    "prisma-studio":"npx prisma studio"
+    "prisma-studio":"npx prisma studio",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.7.0",
