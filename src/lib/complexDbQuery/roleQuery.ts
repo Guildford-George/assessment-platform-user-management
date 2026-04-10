@@ -2,7 +2,7 @@ import { PermissionListRelationFilter, RoleWhereInput } from "../../../generated
 import { GetRolesDto } from "../dtos/roledto";
 
 class RoleQuery{
-    static getRolesQuery(params:GetRolesDto & {organization_id: string}): RoleWhereInput{
+    static getRolesQuery(params:GetRolesDto & {organizationId: string}): RoleWhereInput{
 
         
         const permissionsWhereClause: PermissionListRelationFilter | undefined= params.permissions && ({
@@ -16,16 +16,16 @@ class RoleQuery{
         })
 
         let isSystemBackedWhereClause: RoleWhereInput[] | undefined=  undefined
-        if(params.is_system===true){
-            isSystemBackedWhereClause= [{is_system: params.is_system}]
+        if(params.isSystem===true){
+            isSystemBackedWhereClause= [{is_system: params.isSystem}]
         }
-        else if(params.is_system===false){
-            isSystemBackedWhereClause= [{is_system: params.is_system, organization_id: params.organization_id}]
+        else if(params.isSystem===false){
+            isSystemBackedWhereClause= [{is_system: params.isSystem, organization_id: params.organizationId}]
         }
 
         // when is_system is not provided
         else{
-            isSystemBackedWhereClause= [{is_system: true}, {organization_id:params.organization_id}]
+            isSystemBackedWhereClause= [{is_system: true}, {organization_id:params.organizationId}]
         }
         return  {
             name: nameWhereClause,

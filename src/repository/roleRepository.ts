@@ -8,10 +8,10 @@ class RoleRepository {
             where: query
         })
     }
-    static async getRoleById(roleId: string){
+    static async getRoleById(role_id: string){
         return prisma.role.findFirst({
             where: {
-                id: roleId
+                id: role_id
             }
         })
     }

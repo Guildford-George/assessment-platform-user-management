@@ -1,13 +1,15 @@
 import {Request,Response} from "express"
 import RoleService from "../services/roleService"
-import {RequestExtend} from "../lib/type"
+
 import { CreateRoleDto, GetRolesByPermissionsDto, updateRoleDto} from "../lib/dtos/roledto"
+import { AuthUser } from "../lib/type"
 
 class RoleController{
-    static async getRoles (req:RequestExtend, res: Response){
+    static async getRoles (req:Request, res: Response){
         try {
-            const roles= await RoleService.getRoles(req.user.organization_id, req.query)
-            return res.status(200).json({
+            const user= req.user as AuthUser
+            const roles= await RoleService.getRoles(user.organizationId, req.query)
+            res.status(200).json({
                 success: true,
                 data: {
                     roles
@@ -20,8 +22,8 @@ class RoleController{
 
     static async getRoleById(req: Request, res: Response){
         try {
-            const {role_id}= req.params as {role_id: string}
-            const role= await RoleService.getRoleById(role_id)
+            const {roleId}= req.params as {roleId: string}
+            const role= await RoleService.getRoleById(roleId)
             res.status(200).json({
                 sucess: true,
                 data: {
@@ -33,11 +35,11 @@ class RoleController{
         }
     }
 
-    static async createRole(req:RequestExtend, res: Response){
+    static async createRole(req:Request, res: Response){
         try {
             const createRoleDto: CreateRoleDto= {
                 name: req.body.name,
-                organization_id: req.user.organization_id,
+                organizationId: req.user?.organizationId as string,
                 permissions:req.body.permissions
             }
             const role= await RoleService.createRole(createRoleDto)
@@ -52,12 +54,12 @@ class RoleController{
         }
     }
 
-    static async updateRole(req: RequestExtend, res:Response){
+    static async updateRole(req: Request, res:Response){
         try {
-            const {role_id}= req.params as {role_id: string}
+            const {roleId}= req.params as {roleId: string}
             const {name, deletedPermissions, newPermissions}= req.body
             const updateRoleDto:updateRoleDto={
-                role_id,
+                roleId,
                 name,
                 deletedPermissions,
                 newPermissions

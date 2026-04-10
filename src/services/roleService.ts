@@ -3,29 +3,29 @@ import { CreateRoleDto, CreateRoleEntity, GetRolesDto, updateRoleDto, UpdateRole
 import Helpers from "../lib/helpers"
 import RoleRepository from "../repository/roleRepository"
 class RoleService {
-    static async getRoles(organization_id: string, getRolesDto:GetRolesDto){
-        const {is_system,name,permissions}= getRolesDto
+    static async getRoles(organizationId: string, getRolesDto:GetRolesDto){
+        const {isSystem,name,permissions}= getRolesDto
         const query= RoleQuery.getRolesQuery({
-            organization_id,
-            is_system,
+            organizationId,
+            isSystem,
             name,
             permissions
         })
         const roles= await RoleRepository.getAvailableRoles(query)
         return roles
     }
-    static async getRoleById(role_id: string){
-        const role= await RoleRepository.getRoleById(role_id)
+    static async getRoleById(roleId: string){
+        const role= await RoleRepository.getRoleById(roleId)
         return role
     }
 
     static async createRole(createRoleDto: CreateRoleDto){
-        const isSystem= Helpers.checkIsSystem(createRoleDto.organization_id)
+        const isSystem= Helpers.checkIsSystem(createRoleDto.organizationId)
         const permissionsConnect= createRoleDto.permissions.map((permission)=>({id: permission}))
         const createRoleEntity: CreateRoleEntity= {
             name: createRoleDto.name,
             is_system: isSystem,
-            organization_id: createRoleDto.organization_id,
+            organization_id: createRoleDto.organizationId,
             permissionsConnect
         }
         const  role= await RoleRepository.createRole(createRoleEntity)
@@ -39,7 +39,7 @@ class RoleService {
         const newPermissions= updateRoleDto.newPermissions  || []
         const connectPermissions= newPermissions.map((permission)=>({id: permission}))
         const updateRoleEntity:UpdateRoleEntity= {
-            role_id: updateRoleDto.role_id,
+            role_id: updateRoleDto.roleId,
             name: updateRoleDto.name || undefined,
             disconnect: disconnectPermissions,
             connect: connectPermissions

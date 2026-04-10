@@ -1,13 +1,13 @@
 export interface CreateRoleDto {
     name: string,
-    organization_id: string
+    organizationId: string
     permissions: string []
 }
 
 export interface GetRolesDto {
     name?: string
     permissions?: string[]
-    is_system?:boolean
+    isSystem?:boolean
 }
 
 export interface CreateRoleEntity{
@@ -33,5 +33,5 @@ export interface updateRoleDto{
     name: string,
     deletedPermissions: string[]
     newPermissions: string[]
-    role_id: string
+    roleId: string
 }
