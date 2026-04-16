@@ -17,10 +17,9 @@ model Organization {
   id                        String                   @id @default(uuid()) @db.Uuid
   name                      String                   @db.Text
   admin_email               String                   @db.Text
-  users                     User[]
   organization_linked_users OrganizationLinkedUser[]
   roles                     Role[]
-  logo                      String?                   @db.Text
+  logo                      String?                  @db.Text
   created_at                DateTime                 @default(now()) @db.Timestamptz()
   updated_at                DateTime                 @updatedAt @db.Timestamptz()
 }
@@ -28,30 +27,28 @@ model Organization {
 // User Table
 model User {
   id                 String                   @id @default(uuid()) @db.Uuid
-  email              String                   @db.Text
-  first_name         String?                   @db.Text
-  last_name          String ?                  @db.Text
-  age                Int?                      @db.Integer
+  email              String                   @unique @db.Text
+  first_name         String?                  @db.Text
+  last_name          String?                  @db.Text
+  age                Int?                     @db.Integer
   profile_image      String?                  @db.Uuid
-  organizations      Organization[] //User can belong multiple organization
   organization_links OrganizationLinkedUser[]
-  created_by_type  UserCreatedBy
+  created_by_type    UserCreatedBy
   created_at         DateTime                 @default(now()) @db.Timestamptz()
   updated_at         DateTime                 @updatedAt @db.Timestamptz()
 }
 
 model OrganizationLinkedUser {
-  id              Int          @id @default(autoincrement())
-  organization_id String       @db.Uuid
-  organization    Organization @relation(fields: [organization_id], references: [id])
-  user_id         String       @db.Uuid
-  user            User         @relation(fields: [user_id], references: [id])
-  is_active       Boolean      @default(false)
-  is_deactived    Boolean      @default(false)
-  rold_id         String
-  role            Role         @relation(fields: [rold_id], references: [id])
-  created_at      DateTime     @default(now()) @db.Timestamptz()
-  updated_at      DateTime     @updatedAt @db.Timestamptz()
+  id              Int                    @id @default(autoincrement())
+  organization_id String                 @db.Uuid
+  organization    Organization           @relation(fields: [organization_id], references: [id])
+  user_id         String                 @db.Uuid
+  user            User                   @relation(fields: [user_id], references: [id])
+  status          OrganizationUserStatus @default(INACTIVE)
+  role_id         String
+  role            Role                   @relation(fields: [role_id], references: [id])
+  created_at      DateTime               @default(now()) @db.Timestamptz()
+  updated_at      DateTime               @updatedAt @db.Timestamptz()
 
   @@unique([organization_id, user_id])
 }
@@ -78,8 +75,13 @@ model Permission {
   updated_at DateTime @updatedAt @db.Timestamptz()
 }
 
-
 enum UserCreatedBy {
   USER
   ORGANIZATION
+}
+
+enum OrganizationUserStatus {
+  INACTIVE
+  ACTIVE
+  DEACTIVED
 }
