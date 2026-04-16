@@ -1,4 +1,4 @@
-import { OrganizationUserStatus, UserCreatedBy } from "../../generated/prisma/enums";
+import { AccountStatus, UserCreatedBy } from "../../generated/prisma/enums";
 import { createUserDto, createUserEntity, OrganizationUserDto, UpdateUserRoleDto, UpdateUserRoleEntity } from "../lib/dtos/userDto";
 import prisma from "../lib/prisma";
 import UserRepository from "../repository/userRepository";
@@ -71,12 +71,12 @@ class UserService {
 
     static async deactiveOrganizationUser(deactiveUserDto: OrganizationUserDto) {
         const { organizationId, userId } = deactiveUserDto
-        await UserRepository.updateOrganizationUser(userId, organizationId, { status: OrganizationUserStatus.DEACTIVED })
+        await UserRepository.updateOrganizationUser(userId, organizationId, { status: AccountStatus.DEACTIVED })
         return this.getOrganizationUser(userId, organizationId)
     }
     static async activateOrganizationUser(deactiveUserDto: OrganizationUserDto) {
         const { organizationId, userId } = deactiveUserDto
-        await UserRepository.updateOrganizationUser(userId, organizationId, { status: OrganizationUserStatus.ACTIVE })
+        await UserRepository.updateOrganizationUser(userId, organizationId, { status: AccountStatus.ACTIVE })
         return this.getOrganizationUser(userId, organizationId)
     }
 

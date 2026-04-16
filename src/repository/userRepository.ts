@@ -1,4 +1,4 @@
-import { OrganizationUserStatus, UserCreatedBy } from "../../generated/prisma/enums";
+import { AccountStatus, UserCreatedBy } from "../../generated/prisma/enums";
 import { OrganizationLinkedUserUncheckedUpdateInput, OrganizationLinkedUserUpdateInput } from "../../generated/prisma/models";
 import { createUserEntity, UpdateUserRoleEntity } from "../lib/dtos/userDto";
 import prisma from "../lib/prisma";

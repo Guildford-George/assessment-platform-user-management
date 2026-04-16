@@ -19,6 +19,7 @@ model Organization {
   admin_email               String                   @db.Text
   organization_linked_users OrganizationLinkedUser[]
   roles                     Role[]
+  status AccountStatus @default(INACTIVE)
   logo                      String?                  @db.Text
   created_at                DateTime                 @default(now()) @db.Timestamptz()
   updated_at                DateTime                 @updatedAt @db.Timestamptz()
@@ -44,7 +45,7 @@ model OrganizationLinkedUser {
   organization    Organization           @relation(fields: [organization_id], references: [id])
   user_id         String                 @db.Uuid
   user            User                   @relation(fields: [user_id], references: [id])
-  status          OrganizationUserStatus @default(INACTIVE)
+  status          AccountStatus @default(INACTIVE)
   role_id         String
   role            Role                   @relation(fields: [role_id], references: [id])
   created_at      DateTime               @default(now()) @db.Timestamptz()
@@ -80,7 +81,7 @@ enum UserCreatedBy {
   ORGANIZATION
 }
 
-enum OrganizationUserStatus {
+enum AccountStatus {
   INACTIVE
   ACTIVE
   DEACTIVED

@@ -1,4 +1,4 @@
-import { PermissionListRelationFilter, RoleWhereInput } from "../../../generated/prisma/models";
+import { PermissionListRelationFilter, RoleWhereInput, StringFilter } from "../../../generated/prisma/models";
 import { GetRolesDto } from "../dtos/roledto";
 
 class RoleQuery{
@@ -11,8 +11,9 @@ class RoleQuery{
             }
         })
 
-        const nameWhereClause= params.name && ({
-                startsWith: params.name
+        const nameWhereClause= params.name && (<StringFilter<"Role">>{
+                contains: params.name,
+                mode: "insensitive",
         })
 
         let isSystemBackedWhereClause: RoleWhereInput[] | undefined=  undefined
