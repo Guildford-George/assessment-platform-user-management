@@ -62,6 +62,11 @@ class UserRepository {
             where: {email}
         })
     }
+    static async getUserById(id: string){
+        return prisma.user.findFirst({
+            where: {id}
+        })
+    }
 
     static async getOrganizationUser(user_id: string, organization_id: string){
         return prisma.user.findFirst({

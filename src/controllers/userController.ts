@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import UserService from "../services/userService";
 import { AuthUser } from "../lib/type";
 import { createUserDto, UpdateUserRoleDto } from "../lib/dtos/userDto";
+import { Organization } from "../../generated/prisma/client";
 
 class UserController {
     static async getOrganizationUsers(req: Request, res: Response){
@@ -107,7 +108,7 @@ class UserController {
              const {organizationId}= req.user as AuthUser
             const {userId}= req.params as {userId: string}
 
-            const user= await UserService.deactiveOrganizationUser({organizationId,userId})
+            await UserService.deactiveOrganizationUser({organizationId,userId})
             res.status(204)
         } catch (error) {
             

@@ -16,11 +16,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "create-db":"",
+    "create-db": "",
     "prisma-update": "npx prisma db push",
     "prisma-generate": "npx prisma generate",
     "prisma-migrate": "npx prisma migrate dev",
-    "prisma-studio":"npx prisma studio",
+    "prisma-studio": "npx prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -29,12 +29,14 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
+    "kafkajs": "^2.2.4",
     "morgan": "^1.10.1",
     "pg": "^8.20.0",
     "winston": "^3.19.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/kafkajs": "^1.8.2",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.5.2",
     "@types/pg": "^8.20.0",

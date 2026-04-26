@@ -1,5 +1,6 @@
 import { AccountStatus } from "../../generated/prisma/enums";
 import { CreateOrganizationDto, CreateOrganizationEntity, UpdateOrganizationDto} from "../lib/dtos/organizationDto";
+import ProducerFactory from "../lib/kafka/publish/producerFactory";
 import OrganizationRepository from "../repository/OrganizationRepository";
 
 class OrganizationService {
@@ -8,7 +9,12 @@ class OrganizationService {
             admin_email: createOrganizationDto.email,
             name: createOrganizationDto.name
         }
-        return OrganizationRepository.createOrganization(createOrganizationEntity)
+        const organization= await OrganizationRepository.createOrganization(createOrganizationEntity)
+
+        // report event
+        await ProducerFactory.createOrganizationEvent(organization)
+
+        return organization
     }
     static async updateOrganization(organizationId: string,updateOrganizationDto: UpdateOrganizationDto){
         const {logo,name}= updateOrganizationDto
@@ -23,14 +29,28 @@ class OrganizationService {
     }
 
     static async deleteOrganization(organizationId: string){
-        return OrganizationRepository.deleteOrganization(organizationId)
+        const organization= await OrganizationRepository.deleteOrganization(organizationId)
+
+        // report event
+        await ProducerFactory.deleteOrganizationEvent(organization)
+
+        return organization
     }
 
     static async activateOrganization(organizationId: string){
-        return OrganizationRepository.updateOrganizationStatus(organizationId, AccountStatus.ACTIVE)
+        const organization= await OrganizationRepository.updateOrganizationStatus(organizationId, AccountStatus.ACTIVE)
+
+        // report event
+        await ProducerFactory.organizationStatusEvent(organization)
+        return organization
     }
     static async deactivateOrganization(organizationId: string){
-        return OrganizationRepository.updateOrganizationStatus(organizationId, AccountStatus.DEACTIVED)
+        const organization= await OrganizationRepository.updateOrganizationStatus(organizationId, AccountStatus.DEACTIVED)
+
+        // report event
+        await ProducerFactory.organizationStatusEvent(organization)
+        
+        return organization
     }
 }
 
