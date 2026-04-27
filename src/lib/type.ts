@@ -1,9 +1,13 @@
+import { JwtPayload } from "jsonwebtoken"
 import { AccountStatus, Organization, User } from "../../generated/prisma/client"
 
 export interface AuthUser {
-    organizationId: string
+    organizationId: string,
+    userId: string,
+    email: string
 }
 
+export interface JwtPayloadExt extends JwtPayload, AuthUser{}
 
 export interface OrganizationUserEventPayload {
     user: User,
