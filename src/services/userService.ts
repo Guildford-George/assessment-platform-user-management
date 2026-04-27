@@ -67,8 +67,8 @@ class UserService {
 
     static async getOrganizationUser(userId: string, organizationId: string) {
         const user = await UserRepository.getOrganizationUser(
-            userId,
-            organizationId,
+            {user_id:userId,
+            organization_id:organizationId,}
         );
         const {
             email,
@@ -100,8 +100,8 @@ class UserService {
     ) {
         const { roleId, organizationId, userId } = updateUserRoleDto;
         await UserRepository.updateOrganizationUser(
-            userId,
-            organizationId,
+            {user_id:userId,
+            organization_id:organizationId,},
             { role_id: roleId },
         );
         // report event
@@ -115,7 +115,8 @@ class UserService {
     static async deactiveOrganizationUser(deactiveUserDto: OrganizationUserDto) {
         const { organizationId, userId } = deactiveUserDto;
         const status= AccountStatus.DEACTIVED
-        await UserRepository.updateOrganizationUser(userId, organizationId, {status});
+        await UserRepository.updateOrganizationUser({user_id:userId,
+            organization_id:organizationId,}, {status});
 
         // report event
         await ProducerFactory.organizationUserStatusEvent({
@@ -126,18 +127,20 @@ class UserService {
     static async activateOrganizationUser(deactiveUserDto: OrganizationUserDto) {
         const { organizationId, userId } = deactiveUserDto;
         const status= AccountStatus.ACTIVE
-        await UserRepository.updateOrganizationUser(userId, organizationId, {status});
+        await UserRepository.updateOrganizationUser({user_id:userId,
+            organization_id:organizationId,}, {status});
         return this.getOrganizationUser(userId, organizationId);
     }
 
     static async deleteOrganizationUser(deleteUserDto: OrganizationUserDto) {
         const { organizationId, userId } = deleteUserDto;
         const user = (await UserRepository.getOrganizationUser(
-            userId,
-            organizationId,
+            {user_id:userId,
+            organization_id:organizationId,}
         ))!;
         if (user.created_by_type === UserCreatedBy.USER) {
-            await UserRepository.deleteOrganizationUser(userId, organizationId);
+            await UserRepository.deleteOrganizationUser({user_id:userId,
+            organization_id:organizationId,});
             // report event
             await ProducerFactory.deleteOrganizationUserEvent({organizationId,userId})
         } else {
