@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import { AuthUser, JwtPayloadExt } from "./type";
+import { InternalServerErrorException, UnauthorizedException } from "./exception/statusCodeExceptions";
+import { AUTH_ERRORS } from "./exception/errorMessage";
 
 class AppToken {
     static decode (token: string){
@@ -13,15 +15,17 @@ class AppToken {
             return authUser
         } catch (error) {
             if(error instanceof jwt.JsonWebTokenError){
-                // update after implementing errorhandlers
+                throw new UnauthorizedException({
+                    error: AUTH_ERRORS.INVALID_CREDENTIALS
+                })
             }
-            else if(error instanceof jwt.TokenExpiredError){
-                // update after implementing errorhandlers
-
+            if(error instanceof jwt.TokenExpiredError){
+                throw new UnauthorizedException({
+                    error: AUTH_ERRORS.TOKEN_EXPIRED
+                })
             }
 
-            // update after implementing errorhandlers
-            throw new Error("Error")
+            throw error
         }
     }
 }

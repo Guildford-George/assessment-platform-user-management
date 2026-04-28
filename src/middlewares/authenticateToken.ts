@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { STATUS_CODES } from "http";
 import AppToken from "../lib/appToken";
+import { UnauthorizedException } from "../lib/exception/statusCodeExceptions";
+import { AUTH_ERRORS } from "../lib/exception/errorMessage";
 
 
 const authenticationToken= (req:Request, res: Response, next:NextFunction)=>{
@@ -9,13 +11,9 @@ const authenticationToken= (req:Request, res: Response, next:NextFunction)=>{
 
         const token = authorization?.split(" ")[1]
         if(!token){
-            return res.status(401).json({
-                success: true,
-                data: {
-                    message: "You are not authorized"
-                }
+            throw new UnauthorizedException({
+                error: AUTH_ERRORS.UNAUTHORIZED
             })
-
         }
         req.user= AppToken.decode(token)
         

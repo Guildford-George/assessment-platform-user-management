@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import UserRepository from "../repository/userRepository";
+import { NotFoundException } from "../lib/exception/statusCodeExceptions";
+import { USER_ERRORS } from "../lib/exception/errorMessage";
 
 class UserMiddleware {
   static async organizationUserAccess(
@@ -15,8 +17,11 @@ class UserMiddleware {
         organization_id: organizationId,
       });
       if (!user) {
-        // update after implementing errorhandlers
+        throw new NotFoundException({
+          error: USER_ERRORS.NOT_FOUND
+        })
       }
+      // Update when permission is implemented
       next();
     } catch (error) {
       next(error);

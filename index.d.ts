@@ -7,7 +7,4 @@ declare global {
     }
   }
 
-  // namespace Jwt {
-  //   interface JwtPayload extends AuthUser{}
-  // }
 }

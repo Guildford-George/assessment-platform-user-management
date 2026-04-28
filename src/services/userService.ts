@@ -7,10 +7,12 @@ import {
 } from "../lib/dtos/userDto";
 import UserRepository from "../repository/userRepository";
 import ProducerFactory from "../lib/kafka/publish/producerFactory";
+import { ConflictException } from "../lib/exception/statusCodeExceptions";
+import { USER_ERRORS } from "../lib/exception/errorMessage";
 class UserService {
     static async getOrganizationUsers(organizationId: string) {
         const users = await UserRepository.getOrganizationUsers(organizationId);
-        const response  = users.map((user) => {
+        const response = users.map((user) => {
             const {
                 age,
                 email,
@@ -67,8 +69,10 @@ class UserService {
 
     static async getOrganizationUser(userId: string, organizationId: string) {
         const user = await UserRepository.getOrganizationUser(
-            {user_id:userId,
-            organization_id:organizationId,}
+            {
+                user_id: userId,
+                organization_id: organizationId,
+            }
         );
         const {
             email,
@@ -100,8 +104,10 @@ class UserService {
     ) {
         const { roleId, organizationId, userId } = updateUserRoleDto;
         await UserRepository.updateOrganizationUser(
-            {user_id:userId,
-            organization_id:organizationId,},
+            {
+                user_id: userId,
+                organization_id: organizationId,
+            },
             { role_id: roleId },
         );
         // report event
@@ -114,40 +120,58 @@ class UserService {
 
     static async deactiveOrganizationUser(deactiveUserDto: OrganizationUserDto) {
         const { organizationId, userId } = deactiveUserDto;
-        const status= AccountStatus.DEACTIVED
-        await UserRepository.updateOrganizationUser({user_id:userId,
-            organization_id:organizationId,}, {status});
+        const status = AccountStatus.DEACTIVED
+        const user = (await UserRepository.getOrganizationUser({ organization_id: organizationId, user_id: userId }))!
+        if (user.organization_links[0].status === status) {
+            throw new ConflictException({ error: USER_ERRORS.ALREADY_DEACTIVATED })
+        }
+
+        await UserRepository.updateOrganizationUser({
+            user_id: userId,
+            organization_id: organizationId,
+        }, { status });
 
         // report event
         await ProducerFactory.organizationUserStatusEvent({
-            organizationId,userId,status
+            organizationId, userId, status
         })
         return this.getOrganizationUser(userId, organizationId);
     }
     static async activateOrganizationUser(deactiveUserDto: OrganizationUserDto) {
         const { organizationId, userId } = deactiveUserDto;
-        const status= AccountStatus.ACTIVE
-        await UserRepository.updateOrganizationUser({user_id:userId,
-            organization_id:organizationId,}, {status});
+        const status = AccountStatus.ACTIVE
+        const user = (await UserRepository.getOrganizationUser({ organization_id: organizationId, user_id: userId }))!
+        if (user.organization_links[0].status === status) {
+            throw new ConflictException({ error: USER_ERRORS.ALREADY_DEACTIVATED })
+        }
+        // report event
+        await UserRepository.updateOrganizationUser({
+            user_id: userId,
+            organization_id: organizationId,
+        }, { status });
         return this.getOrganizationUser(userId, organizationId);
     }
 
     static async deleteOrganizationUser(deleteUserDto: OrganizationUserDto) {
         const { organizationId, userId } = deleteUserDto;
         const user = (await UserRepository.getOrganizationUser(
-            {user_id:userId,
-            organization_id:organizationId,}
+            {
+                user_id: userId,
+                organization_id: organizationId,
+            }
         ))!;
         if (user.created_by_type === UserCreatedBy.USER) {
-            await UserRepository.deleteOrganizationUser({user_id:userId,
-            organization_id:organizationId,});
+            await UserRepository.deleteOrganizationUser({
+                user_id: userId,
+                organization_id: organizationId,
+            });
             // report event
-            await ProducerFactory.deleteOrganizationUserEvent({organizationId,userId})
+            await ProducerFactory.deleteOrganizationUserEvent({ organizationId, userId })
         } else {
             await UserRepository.deleteUser(userId);
 
             // report event
-            await ProducerFactory.deleteUserEvent({organizationId, userId})
+            await ProducerFactory.deleteUserEvent({ organizationId, userId })
         }
 
     }

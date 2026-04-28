@@ -20,4 +20,6 @@ app.get("/", (req, res)=>{
     })
 })
 
+
+app.use(Error)
 app.listen(PORT, ()=>{console.log("User Management service running")})
