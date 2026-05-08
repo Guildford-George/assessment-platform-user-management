@@ -28,6 +28,15 @@ class AppToken {
             throw error
         }
     }
+
+    static generateSystemRequestToken(){
+        // continue
+        return jwt.sign({user:"system"},process.env['SYSTEM_ACCESSTOKEN_SECRET']!)
+    }
+
+    static generateAccessToken(){
+        return jwt.sign({user:"system"},process.env['ACCESSTOKEN_SECRET']!)
+    }
 }
 
 export default AppToken

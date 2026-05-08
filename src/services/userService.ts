@@ -22,7 +22,7 @@ class UserService {
                 profile_image,
                 organization_links,
             } = user;
-            const { created_at, status, role, updated_at } = organization_links[0];
+            const { created_at, status, updated_at, role_id,role_name} = organization_links[0];
             return {
                 id,
                 email,
@@ -33,8 +33,8 @@ class UserService {
                 created_at,
                 updated_at,
                 status,
-                role_id: role.id,
-                role: role.name,
+                role_id,
+                role_name: role_name,
             };
         });
 
@@ -49,11 +49,12 @@ class UserService {
             email: createUserDto.email,
             role_id: createUserDto.roleId,
             organization_id: createUserDto.organizationId,
+            role_name: createUserDto.roleName
         };
         if (!user) {
             user = await UserRepository.createNewUser(createUserEntity);
         } else {
-            user = await UserRepository.createUserExisting(createUserEntity);
+            user = await UserRepository.createExistingUser(createUserEntity);
         }
 
         // report event
@@ -83,7 +84,7 @@ class UserService {
             organization_links,
             id,
         } = user!;
-        const { role, created_at, status, updated_at } = organization_links[0];
+        const { role_id,role_name, created_at, status, updated_at } = organization_links[0];
         return {
             id,
             email,
@@ -91,8 +92,8 @@ class UserService {
             last_name,
             profile_image,
             age,
-            role_id: role.id,
-            role: role.name,
+            role_id,
+            role_name,
             status,
             created_at,
             updated_at,
@@ -102,13 +103,13 @@ class UserService {
     static async updateOrganizationUserRole(
         updateUserRoleDto: UpdateUserRoleDto,
     ) {
-        const { roleId, organizationId, userId } = updateUserRoleDto;
+        const { roleId, organizationId, userId,roleName } = updateUserRoleDto;
         await UserRepository.updateOrganizationUser(
             {
                 user_id: userId,
                 organization_id: organizationId,
             },
-            { role_id: roleId },
+            { role_id: roleId, role_name:roleName },
         );
         // report event
         await ProducerFactory.updateOrganizationUserEvent(updateUserRoleDto);

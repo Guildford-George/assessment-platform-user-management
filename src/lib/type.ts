@@ -57,3 +57,16 @@ export interface DeleteOrganizationUserEventPublish {
 export interface DeleteUser{
     userId: string
 }
+
+
+export interface GetDefaultRoleHttpReponse
+{
+    data: {
+        role: {
+            id: string;
+            name: string;
+            is_system: boolean;
+            organization_id: string;
+        }
+    };
+}

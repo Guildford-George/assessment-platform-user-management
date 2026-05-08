@@ -4,11 +4,18 @@ import { CreateOrganizationDto, CreateOrganizationEntity } from "../lib/dtos/org
 import prisma from "../lib/prisma";
 
 class OrganizationRepository{
-    static async createOrganization(createOrganizationEntity: CreateOrganizationEntity){
-        const {admin_email,name}= createOrganizationEntity
+    static async createOrganizationLinkUser(createOrganizationEntity: CreateOrganizationEntity, ){
+        const {admin_email,name, role_id,role_name,user_id}= createOrganizationEntity
         return prisma.organization.create({
             data: {
-                admin_email,name
+                admin_email,name,
+                organization_linked_users: {
+                    create: {
+                        user_id,
+                        role_id,
+                        role_name
+                    }
+                }
             }
         })
     }

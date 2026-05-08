@@ -64,7 +64,7 @@ class OrganizationController {
     static async deleteOrganization(req: Request, res: Response) {
         try {
             const { organizationId } = req.params as { organizationId: string }
-            const organization = await OrganizationService.deleteOrganization(organizationId)
+            await OrganizationService.deleteOrganization(organizationId)
             res.status(204)
         } catch (error) {
 

@@ -18,8 +18,7 @@ model Organization {
   name                      String                   @db.Text
   admin_email               String                   @db.Text
   organization_linked_users OrganizationLinkedUser[]
-  roles                     Role[]
-  status AccountStatus @default(INACTIVE)
+  status                    AccountStatus            @default(INACTIVE)
   logo                      String?                  @db.Text
   created_at                DateTime                 @default(now()) @db.Timestamptz()
   updated_at                DateTime                 @updatedAt @db.Timestamptz()
@@ -40,41 +39,20 @@ model User {
 }
 
 model OrganizationLinkedUser {
-  id              Int                    @id @default(autoincrement())
-  organization_id String                 @db.Uuid
-  organization    Organization           @relation(fields: [organization_id], references: [id])
-  user_id         String                 @db.Uuid
-  user            User                   @relation(fields: [user_id], references: [id])
+  id              Int           @id @default(autoincrement())
+  organization_id String        @db.Uuid
+  organization    Organization  @relation(fields: [organization_id], references: [id])
+  user_id         String        @db.Uuid
+  user            User          @relation(fields: [user_id], references: [id])
   status          AccountStatus @default(INACTIVE)
   role_id         String
-  role            Role                   @relation(fields: [role_id], references: [id])
-  created_at      DateTime               @default(now()) @db.Timestamptz()
-  updated_at      DateTime               @updatedAt @db.Timestamptz()
+  role_name       String
+  created_at      DateTime      @default(now()) @db.Timestamptz()
+  updated_at      DateTime      @updatedAt @db.Timestamptz()
 
   @@unique([organization_id, user_id])
 }
 
-// Role Table
-model Role {
-  id                        String                   @id @default(cuid()) @db.Text
-  name                      String                   @db.Text
-  is_system                 Boolean
-  organization_id           String                   @db.Uuid
-  organization              Organization             @relation(fields: [organization_id], references: [id])
-  organization_linked_users OrganizationLinkedUser[]
-  permissions               Permission[]
-  created_at                DateTime                 @default(now()) @db.Timestamptz()
-  updated_at                DateTime                 @updatedAt @db.Timestamptz()
-}
-
-// Permission Table
-model Permission {
-  id         String   @id @default(cuid())
-  name       String   @db.Text
-  roles      Role[]
-  created_at DateTime @default(now()) @db.Timestamptz()
-  updated_at DateTime @updatedAt @db.Timestamptz()
-}
 
 enum UserCreatedBy {
   USER

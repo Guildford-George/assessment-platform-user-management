@@ -5,6 +5,9 @@ export interface CreateOrganizationDto {
 export interface CreateOrganizationEntity {
     name: string,
     admin_email: string,
+    user_id: string,
+    role_id: string,
+    role_name: string
 }
 export interface UpdateOrganizationDto {
     name: string,

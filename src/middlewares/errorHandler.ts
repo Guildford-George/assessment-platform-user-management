@@ -14,7 +14,9 @@ class ErrorHandler {
 
             }
 
-            // report unknuown and uncaught error 
+
+
+            // report unknown and uncaught error 
             await this.reportErrorToDeveloper(error as Error, req)
 
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

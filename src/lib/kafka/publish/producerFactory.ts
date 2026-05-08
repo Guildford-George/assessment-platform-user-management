@@ -1,6 +1,6 @@
 import {Kafka, logLevel, Producer, } from "kafkajs"
 import { KafkaTopics } from "../topics"
-import { Organization, User } from "../../../../generated/prisma/client"
+import { AccountStatus, Organization, User } from "../../../../generated/prisma/client"
 import { OrganizationUserEventPayload, NewOrganizationUserEventPublish, UpdateOrganizationUserEventPublish, OrganizationUserStatusEventPayload, OrganizationuserStatusEventPublish, DeleteOrganizationUserEventPublish, DeleteOrganizationUserEventPayload } from "../../type"
 import OrganizationService from "../../../services/organizationService"
 import OrganizationRepository from "../../../repository/OrganizationRepository"
@@ -53,7 +53,7 @@ export class ProducerFactory {
             user,
             organization,
         }
-        await producerInitialiser.sendEvent(KafkaTopics.DELETE_ORGANIZATION_USER_STATUS, payload)
+        await producerInitialiser.sendEvent(KafkaTopics.DELETE_ORGANIZATION_USER, payload)
     }
     
     static async deleteUserEvent(data: DeleteOrganizationUserEventPublish){
@@ -73,15 +73,15 @@ export class ProducerFactory {
 
     // Organization-based events start here
 
-    static async createOrganizationEvent(data: Organization){
+    static async createOrganizationEvent(data: {organization: Organization, user:User}){
         await producerInitialiser.sendEvent(KafkaTopics.CREATE_ORGANIZATION, data)
     }
 
-    static async deleteOrganizationEvent(data: Organization){
+    static async deleteOrganizationEvent(data: {organization: Organization, users:User[]}){
         await producerInitialiser.sendEvent(KafkaTopics.DELETE_ORGANIZATION, data)
     }
 
-    static async organizationStatusEvent(data: Organization){
+    static async organizationStatusEvent(data: {organization: Organization, users:User[], status: AccountStatus}){
         await producerInitialiser.sendEvent(KafkaTopics.ORGANIZATION_ACCOUNT_STATUS, data)
     }
 }

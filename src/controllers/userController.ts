@@ -21,8 +21,9 @@ class UserController {
     static async createOrganizationUser(req: Request, res: Response){
         try {
             const {email, firstName, lastName, roleId} = req.body
+            const roleName= req.role?.name as string
             const authUser= req.user as AuthUser
-            const createUserDto: createUserDto= {email, firstName, lastName, roleId, organizationId: authUser.organizationId} 
+            const createUserDto: createUserDto= {email, firstName, lastName, roleId, organizationId: authUser.organizationId, roleName} 
 
             const user= await UserService.createOrganizationUser(createUserDto)
             res.status(201).json({
@@ -53,10 +54,12 @@ class UserController {
             const {organizationId}= req.user as AuthUser
             const {userId}= req.params as {userId: string}
             const roleId= req.body.roleId as string
+            const roleName= req.role?.name as string
             const updateUserRoleDto: UpdateUserRoleDto= {
                 organizationId,
                 roleId,
-                userId
+                userId,
+                roleName
             }
             const user= await UserService.updateOrganizationUserRole(updateUserRoleDto)
             res.status(200).json({

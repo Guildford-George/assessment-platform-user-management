@@ -1,6 +1,7 @@
 import { AccountStatus, UserCreatedBy } from "../../generated/prisma/enums";
 import { OrganizationLinkedUserUncheckedUpdateInput, OrganizationLinkedUserUpdateInput } from "../../generated/prisma/models";
 import { createUserEntity, UpdateUserRoleEntity } from "../lib/dtos/userDto";
+import RoleHttp from "../lib/http/role";
 import prisma from "../lib/prisma";
 import { OrganizationUserId } from "../lib/type";
 
@@ -18,7 +19,8 @@ class UserRepository {
                 organization_links: {
                     select: {
                         status: true,
-                        role: true,
+                        role_id: true,
+                        role_name: true,
                         created_at: true,
                         updated_at: true,
                     },
@@ -30,6 +32,7 @@ class UserRepository {
 
     static async createNewUser (createUserEntity: createUserEntity){
         const {email,first_name,last_name,organization_id,role_id}= createUserEntity
+        const role= await RoleHttp.getRoleById(role_id)
         return prisma.user.create({
             data: {
                 email, first_name,last_name,created_by_type: UserCreatedBy.ORGANIZATION,
@@ -37,15 +40,16 @@ class UserRepository {
                     create: {
                         organization_id,
                         role_id,
+                        role_name: role.name
                     }
                 },
             }
         })
     }
 
-    static async createUserExisting(createUserEntity: createUserEntity){
+    static async createExistingUser(createUserEntity: createUserEntity){
         const {email,organization_id,role_id}= createUserEntity
-
+        const role= await RoleHttp.getRoleById(role_id)
         return prisma.user.update({
             where: {email},
             data: {
@@ -53,6 +57,7 @@ class UserRepository {
                     create: {
                         organization_id,
                         role_id,
+                        role_name: role.name
                     }
                 },
             }
@@ -83,7 +88,8 @@ class UserRepository {
             include: {
                 organization_links: {
                     select: {
-                        role: true,
+                        role_id:true,
+                        role_name: true,
                         status: true,
                         created_at: true,
                         updated_at: true,  
